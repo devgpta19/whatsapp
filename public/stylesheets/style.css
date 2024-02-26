@@ -1,0 +1,73 @@
+* {
+    font-family: 'Gilroy';
+    margin: 0;
+    padding: 0;
+}
+
+html,
+body {
+    height: 100vh;
+    width: 100%;
+}
+
+#all {
+    height: 100%;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+}
+
+h1{
+    color: aliceblue;
+    margin-bottom: 2rem;
+}
+
+#main {
+    height: 100%;
+    width: 100%;
+    background-color: rgb(37, 37, 37);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+}
+
+form {
+    display: flex;
+    flex-direction: column;
+}
+
+.infield {
+    width: 25rem;
+    height: 2rem;
+    margin: 2vh 0;
+    border-radius: 1vh;
+    border: none;
+}
+
+.submit {
+    background-color: rgb(0, 0, 191);
+    color: aliceblue;
+    width: 5rem;
+    height: 2.5rem;
+    border-radius: 5vw;
+    margin-top: 1vh;
+    border: none;
+
+}
+
+input::placeholder {
+    color: rgb(108, 108, 108);
+    margin-left: 10px;
+    padding-left: 10px;
+}
+
+#textt{
+    color: rgb(98, 98, 98);
+    font-size: 0.9rem;
+}
+
+#logbtn{
+    margin-top: 2rem;
+    width: 25rem;
+}
