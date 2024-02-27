@@ -19,7 +19,7 @@ router.post('/register', function (req, res, next) {
   }
   userModel
     .register(newUser, req.body.password)
-    .then((result) => {
+    .then( function(result) {
       passport.authenticate('local')(req, res, () => {
         res.redirect('/home')
       });
@@ -59,7 +59,7 @@ router.get('/home', isloggedIn, async function(req,res,next){
   const loggedInUser = await userModel.findOne({
     username:req.user.username
   })
-  console.log(loggedInUser)
+  // console.log(loggedInUser)
 
   res.render('home',{
     loggedInUser
