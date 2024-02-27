@@ -144,7 +144,7 @@
       width: 95%;
       border: none;
       margin-right: 0.3rem;
-      color: rgb(43, 43, 43) ;
+      color: rgb(43, 43, 43);
       padding-left: 1rem;
       font-size: 1rem;
       font-weight: 600;
@@ -154,7 +154,7 @@
       color: rgb(108, 108, 108);
     }
 
-    #msgsend > button{
+    #msgsend>button {
       height: 100%;
       width: 5%;
       border-radius: 50%;
@@ -165,8 +165,62 @@
       border-bottom-right-radius: 2rem;
     }
 
-    #msgsend > button > i{
-      color: rgb(43, 43, 43) ;
+    #msgsend>button>i {
+      color: rgb(43, 43, 43);
+    }
+
+    #searchSection {
+      height: 100%;
+      width: 100%;
+      display: flex;
+      justify-content: center;gap: inherit;
+      align-items: center;
+      position: absolute;
+      transform: translate(-50%, -50%);
+      top: 50%;
+      left: 50%;
+      backdrop-filter: blur(8px);
+      background-color: #00000057;
+      display: none;
+    }
+
+    #searchSection #center {
+      height: 70vh;
+      width: 30vw;
+      background-color: #fff;
+      border-radius: 1rem;
+      overflow: hidden;
+    }
+
+    #center input {
+      height: 3rem;
+      width: 100%;
+      background-color: #efefef;
+      border: 1px solid rgb(125, 125, 125);
+      /* outline: none; */
+      border-top-left-radius: 1rem;
+      border-bottom-left-radius: 0rem;
+      border-bottom-right-radius: 0rem;
+    }
+
+    #center #users {
+      display: flex;
+      flex-direction: column;
+      padding: 0.5rem;
+
+    }
+
+    #center #users #user {
+      display: flex;
+      align-items: center;
+      /* gap: 0.75rem; */
+      cursor: pointer;
+    }
+
+    #center #users #user img {
+      height: 2.5rem;
+      width: 2.5rem;
+      border-radius: 50%;
     }
 
   </style>
@@ -242,8 +296,29 @@
         </button>
       </div>
 
+      <div id="searchSection">
+        <div id="center">
+          <input id="serachUserInput" type="text" placeholder="Search a User">
+          <div id="user">
+
+          </div>
+        </div>
+      </div>
+
     </div>
   </div>
+
+
+  <script src="/socket.io/socket.io.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/1.6.7/axios.min.js"
+    integrity="sha512-NQfB/bDaB8kaSXF8E77JjhHG5PM6XVRxvHzkZiwl3ddWCEPBa23T76MuWSwAJdMGJnmQqM0VeY9kFszsrBEFrQ=="
+    crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+
+  <script>
+
+    var socket
+
+  </script>
 
 </body>
 
