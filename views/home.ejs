@@ -98,6 +98,7 @@
       flex-direction: column;
       overflow: hidden;
       background-color: rgb(196, 196, 196);
+      /* display: none; */
     }
 
     #topright {
@@ -121,6 +122,17 @@
       height: 40rem;
       /* padding: 1rem; */
       background-color: rgb(196, 196, 196);
+    }
+
+    #conversationArea #message{
+      padding: 0.5rem 0.75rem;
+      border-radius: 1rem;
+      background-color: #d1d1d1;
+      width: fit-content;
+    }
+
+    #conversationArea #outgoingMessage {
+      margin-left: auto;
     }
 
     #msgsend {
@@ -173,7 +185,8 @@
       height: 100%;
       width: 100%;
       display: flex;
-      justify-content: center;gap: inherit;
+      justify-content: center;
+      gap: inherit;
       align-items: center;
       position: absolute;
       transform: translate(-50%, -50%);
@@ -223,6 +236,12 @@
       border-radius: 50%;
     }
 
+    #search button{
+      background-color: transparent;
+      text-decoration: none;
+      border: none;
+    }
+
   </style>
 
 </head>
@@ -241,38 +260,24 @@
           </p>
         </div>
         <div id="search">
-          <i class="ri-user-add-line"></i>
+          <button>
+            <i class="ri-user-add-line"></i>
+          </button>
         </div>
       </div>
 
       <h2>Friends</h2>
 
       <div id="allfriends">
-        <div id="friendprofile">
-          <img id="image" src="https://i.pinimg.com/564x/3e/b4/f3/3eb4f3440384fd1b4e2870fc8b0ab829.jpg" alt="">
-          <p id="name">@username</p>
-        </div>
-        <div id="friendprofile">
-          <img id="image" src="https://i.pinimg.com/564x/3e/b4/f3/3eb4f3440384fd1b4e2870fc8b0ab829.jpg" alt="">
-          <p id="name">@username</p>
-        </div>
-        <div id="friendprofile">
-          <img id="image" src="https://i.pinimg.com/564x/3e/b4/f3/3eb4f3440384fd1b4e2870fc8b0ab829.jpg" alt="">
-          <p id="name">@username</p>
-        </div>
-        <div id="friendprofile">
-          <img id="image" src="https://i.pinimg.com/564x/3e/b4/f3/3eb4f3440384fd1b4e2870fc8b0ab829.jpg" alt="">
-          <p id="name">@username</p>
-        </div>
-      </div>
 
-
-      <!-- <% loggedInUser.friends.forEach(friend=> {%>
-          <div id="userprofile">
+        <% loggedInUser.friends.forEach(friend=> {%>
+          <div id="friendprofile">
             <img id="image" src="https://i.pinimg.com/564x/3e/b4/f3/3eb4f3440384fd1b4e2870fc8b0ab829.jpg" alt="">
             <p id="name">@<%=friend.username%>
           </div>
-        <%}) %> -->
+          <%}) %>
+
+      </div>
 
     </div>
 
@@ -316,7 +321,37 @@
 
   <script>
 
-    var socket
+    var socket = io();
+
+    const username = '<%= loggedInUser.username %>'
+    socket.emit('join-server', username)
+
+    let oppositeUser = null
+
+    document.querySelector('#searchUserInput').addEventListener('input', async function(event){
+      const data = document.querySelector("#searchUserInput").value
+
+      if(data == "") return 
+
+      const responce = await axios.post('/searchUser',{
+        data:data
+      })
+
+      document.querySelector('#center #users').innerHTML = ""
+      responce.data.forEach(function(searchUser){
+        appendSearchUser(searchUser.profileImage, searchUser.username, searchUser._id)
+      });
+
+    })
+
+    function appendSearchUser(profileImage, username, id){
+      const template = `
+      <div onclick="addFriend(event,'${id}','${profileImage}','${username}')" class="user" id="${id}" >
+            <img src="${profileImage}" alt="">
+            <h3> ${username} </h3>
+          </div>`
+          document.querySelector('#center #user').innerHTML += template
+    }
 
   </script>
 
