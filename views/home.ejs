@@ -124,7 +124,7 @@
       background-color: rgb(196, 196, 196);
     }
 
-    #conversationArea #message{
+    #conversationArea #message {
       padding: 0.5rem 0.75rem;
       border-radius: 1rem;
       background-color: #d1d1d1;
@@ -133,6 +133,16 @@
 
     #conversationArea #outgoingMessage {
       margin-left: auto;
+    }
+
+    #conversationArea #IncomingMessage {
+      margin-right: auto;
+    }
+
+    .chat .user {
+      display: flex;
+      gap: 1rem;
+      align-items: center;
     }
 
     #msgsend {
@@ -194,7 +204,7 @@
       left: 50%;
       backdrop-filter: blur(8px);
       background-color: #00000057;
-      display: none;
+      /* display: none; */
     }
 
     #searchSection #center {
@@ -223,25 +233,24 @@
 
     }
 
-    #center #users #user {
+    #center #users .user {
       display: flex;
       align-items: center;
       /* gap: 0.75rem; */
       cursor: pointer;
     }
 
-    #center #users #user img {
+    #center #users .user img {
       height: 2.5rem;
       width: 2.5rem;
       border-radius: 50%;
     }
 
-    #search button{
+    #search button {
       background-color: transparent;
       text-decoration: none;
       border: none;
     }
-
   </style>
 
 </head>
@@ -295,9 +304,9 @@
       </div>
 
       <div id="msgsend">
-        <input type="text" placeholder="Enter Message" class="inputMessage">
+        <input type="text" placeholder="Enter Message" id="inputMessage">
         <button>
-          <i id="btn" class="ri-send-plane-2-fill"></i>
+          <i id="sendMessage" class="ri-send-plane-2-fill"></i>
         </button>
       </div>
 
@@ -328,31 +337,122 @@
 
     let oppositeUser = null
 
-    document.querySelector('#searchUserInput').addEventListener('input', async function(event){
+    document.querySelector('#searchUserInput').addEventListener('input', async function (event) {
       const data = document.querySelector("#searchUserInput").value
 
-      if(data == "") return 
+      if (data == "") return
 
-      const responce = await axios.post('/searchUser',{
-        data:data
+      const responce = await axios.post('/searchUser', {
+        data: data
       })
 
       document.querySelector('#center #users').innerHTML = ""
-      responce.data.forEach(function(searchUser){
+      responce.data.forEach(function (searchUser) {
         appendSearchUser(searchUser.profileImage, searchUser.username, searchUser._id)
       });
 
     })
 
-    function appendSearchUser(profileImage, username, id){
+    function appendSearchUser(profileImage, username, id) {
       const template = `
       <div onclick="addFriend(event,'${id}','${profileImage}','${username}')" class="user" id="${id}" >
             <img src="${profileImage}" alt="">
             <h3> ${username} </h3>
           </div>`
-          document.querySelector('#center #user').innerHTML += template
+      document.querySelector('#center #users').innerHTML += template
     }
 
+    function appendChat(profileImage, username, id) {
+      if (document.querySelector(`#chats #apcid_${id}`)) return
+
+      const template = `
+      <div class="chat" id="apcid_${id}" >
+            <div class="user">
+              <img src="${profileImage}" alt="">
+              <h3>${username}</h3>
+            </div>
+          </div>`
+      document.querySelector('.chats').innerHTML += template
+    }
+
+    async function addFriend(event, id, profileImage, username) {
+      try {
+        const responce = await axios.post('/addFriend', {
+          friendId: id
+        })
+
+        console.log("this is working")
+      } catch (err) {
+        console.log("not working error");
+      }
+
+      appendChat(profileImage, username, id)
+
+      document.querySelector('#searchSection').style.display = "none"
+
+    }
+
+    function openSearch() {
+      document.querySelector("#searchSection").style.display = "flex"
+    }
+
+
+    async function openChat(profileImage, username, id) {
+      document.querySelector('#right').style.display = "initial"
+
+      const responce = await axios.post('/getMessages', {
+        oppositeUser: username
+      })
+
+      document.querySelector('#convrsationArea').innerHTML = ""
+
+      responce.data.forEach(function (message) {
+        if (message.sender !== username) appendOutgoingMessage(message.data)
+        else appendIncomingMessage(message.data)
+      })
+
+
+      oppositeUser = username
+
+      document.querySelector('#right #topright #clickeduser img').setAttribute('src', profileImage)
+      document.querySelector('#right #topright #clickeduser #name').innerHTML = username
+    }
+
+
+    function appendOutgoingMessage(message){
+      const template =  `<div id="message outgoingMessage">
+          ${message}
+        </div>`
+        document.querySelector('#conversationArea').innerHTML += template
+    }
+
+    function appendIncomingMessage(message){
+      const template = `<div id="message">
+        ${message}
+        </div>`
+
+        document.querySelector('#conversationArea').innerHTML += template
+    }
+    function sendMessage(){
+      const message = document.querySelector('#inputMessage').value = ""
+      appendOutgoingMessage(message)
+      document.querySelector('#inputMessage').value = ""
+
+      const messageObject = {
+        message,
+        receiver: oppositeUser,
+        sender: username
+      }
+
+      console.log(messageObject)
+
+      socket.emit('send-private-message', messageObject)
+
+    }
+
+    socket.on('receive-private-message', function(messageObject){
+      appendIncomingMessage(messageObject.message)
+    })
   </script>
 
 </body>

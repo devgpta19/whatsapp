@@ -66,4 +66,20 @@ router.get('/home', isloggedIn, async function(req,res,next){
   })
 })
 
+router.post('/searchUser', isloggedIn, async function(req, res, next){
+  const data = req.body.data
+
+  const allUsers = await userModel.find({
+    username:{
+      $regex:data,
+      $options:'i'
+    }
+  })
+
+  console.log(allUsers);
+
+  res.status(200).json(allUsers)
+
+})
+
 module.exports = router;
