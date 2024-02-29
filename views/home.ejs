@@ -204,13 +204,13 @@
       left: 50%;
       backdrop-filter: blur(8px);
       background-color: #00000057;
-      /* display: none; */
+      display: none;
     }
 
     #searchSection #center {
       height: 70vh;
       width: 30vw;
-      background-color: #fff;
+      background-color: #323232;
       border-radius: 1rem;
       overflow: hidden;
     }
@@ -218,7 +218,7 @@
     #center input {
       height: 3rem;
       width: 100%;
-      background-color: #efefef;
+      background-color: #4d4d4d;
       border: 1px solid rgb(125, 125, 125);
       /* outline: none; */
       border-top-left-radius: 1rem;
@@ -269,20 +269,23 @@
           </p>
         </div>
         <div id="search">
-          <button>
+          <button onclick="openSearch()">
             <i class="ri-user-add-line"></i>
           </button>
         </div>
       </div>
 
-      <h2>Friends</h2>
+      <h2>Chats</h2>
 
       <div id="allfriends">
 
         <% loggedInUser.friends.forEach(friend=> {%>
-          <div id="friendprofile">
-            <img id="image" src="https://i.pinimg.com/564x/3e/b4/f3/3eb4f3440384fd1b4e2870fc8b0ab829.jpg" alt="">
-            <p id="name">@<%=friend.username%>
+          <div onclick="openChat('<%= friend.profileImage %>','<%= friend.username %>','<%= friend._id %>')"
+            id="chats" id="apcid<%= friend._id %>">
+            <div id="friendprofile">
+              <img id="image" src="https://i.pinimg.com/564x/3e/b4/f3/3eb4f3440384fd1b4e2870fc8b0ab829.jpg" alt="">
+              <p id="name">@<%=friend.username%>
+            </div>
           </div>
           <%}) %>
 
@@ -312,7 +315,7 @@
 
       <div id="searchSection">
         <div id="center">
-          <input id="serachUserInput" type="text" placeholder="Search a User">
+          <input id="searchUserInput" type="text" placeholder="Search a User">
           <div id="user">
 
           </div>
@@ -340,14 +343,19 @@
     document.querySelector('#searchUserInput').addEventListener('input', async function (event) {
       const data = document.querySelector("#searchUserInput").value
 
+      console.log("data");
       if (data == "") return
 
-      const responce = await axios.post('/searchUser', {
+
+      const response = await axios.post('/searchUser', {
         data: data
       })
 
-      document.querySelector('#center #users').innerHTML = ""
-      responce.data.forEach(function (searchUser) {
+
+
+      document.querySelector('#center #user').innerHTML = ""
+
+      response.data.forEach(searchUser=> {
         appendSearchUser(searchUser.profileImage, searchUser.username, searchUser._id)
       });
 
@@ -359,11 +367,11 @@
             <img src="${profileImage}" alt="">
             <h3> ${username} </h3>
           </div>`
-      document.querySelector('#center #users').innerHTML += template
+      document.querySelector('#center #user').innerHTML += template
     }
 
     function appendChat(profileImage, username, id) {
-      if (document.querySelector(`#chats #apcid_${id}`)) return
+      if (document.querySelector(`#chats > #apcid_${id}`)) return
 
       const template = `
       <div class="chat" id="apcid_${id}" >
@@ -372,12 +380,12 @@
               <h3>${username}</h3>
             </div>
           </div>`
-      document.querySelector('.chats').innerHTML += template
+      document.querySelector('#chats').innerHTML += template
     }
 
     async function addFriend(event, id, profileImage, username) {
       try {
-        const responce = await axios.post('/addFriend', {
+        const response = await axios.post('/addFriend', {
           friendId: id
         })
 
@@ -400,13 +408,13 @@
     async function openChat(profileImage, username, id) {
       document.querySelector('#right').style.display = "initial"
 
-      const responce = await axios.post('/getMessages', {
+      const response = await axios.post('/getMessages', {
         oppositeUser: username
       })
 
       document.querySelector('#convrsationArea').innerHTML = ""
 
-      responce.data.forEach(function (message) {
+      response.data.forEach(function (message) {
         if (message.sender !== username) appendOutgoingMessage(message.data)
         else appendIncomingMessage(message.data)
       })
@@ -419,21 +427,21 @@
     }
 
 
-    function appendOutgoingMessage(message){
-      const template =  `<div id="message outgoingMessage">
+    function appendOutgoingMessage(message) {
+      const template = `<div id="message outgoingMessage">
           ${message}
         </div>`
-        document.querySelector('#conversationArea').innerHTML += template
+      document.querySelector('#conversationArea').innerHTML += template
     }
 
-    function appendIncomingMessage(message){
+    function appendIncomingMessage(message) {
       const template = `<div id="message">
         ${message}
         </div>`
 
-        document.querySelector('#conversationArea').innerHTML += template
+      document.querySelector('#conversationArea').innerHTML += template
     }
-    function sendMessage(){
+    function sendMessage() {
       const message = document.querySelector('#inputMessage').value = ""
       appendOutgoingMessage(message)
       document.querySelector('#inputMessage').value = ""
@@ -450,7 +458,7 @@
 
     }
 
-    socket.on('receive-private-message', function(messageObject){
+    socket.on('receive-private-message', function (messageObject) {
       appendIncomingMessage(messageObject.message)
     })
   </script>

@@ -1,8 +1,8 @@
 var express = require('express');
 var router = express.Router();
 var userModel = require('./users')
+const messageModel = require('./message')
 var users = require('./users')
-
 var passport = require('passport')
 var localStrategy = require('passport-local')
 passport.use(new localStrategy(users.authenticate()))
@@ -12,15 +12,19 @@ router.get('/', function (req, res) {
   res.render('index');
 });
 
+
 router.post('/register', function (req, res, next) {
   var newUser = {
+
     username: req.body.username,
     email: req.body.email,
+
   }
   userModel
     .register(newUser, req.body.password)
     .then( function(result) {
       passport.authenticate('local')(req, res, () => {
+
         res.redirect('/home')
       });
     })
@@ -28,6 +32,7 @@ router.post('/register', function (req, res, next) {
       res.send(err);
     });
 });
+
 
 router.get('/login', function (req, res, next) {
   res.render('login')
@@ -37,6 +42,7 @@ router.post('/login',passport.authenticate('local', {
     successRedirect: '/home',
     failureRedirect: '/login',
   }),
+  function (req, res, next){}
 );
 
 function isloggedIn(req, res, next) {
@@ -58,8 +64,8 @@ router.get('/logout', (req, res, next) => {
 router.get('/home', isloggedIn, async function(req,res,next){
   const loggedInUser = await userModel.findOne({
     username:req.user.username
-  })
-  // console.log(loggedInUser)
+  }).populate('friends')
+  console.log(loggedInUser)
 
   res.render('home',{
     loggedInUser
@@ -69,17 +75,20 @@ router.get('/home', isloggedIn, async function(req,res,next){
 router.post('/searchUser', isloggedIn, async function(req, res, next){
   const data = req.body.data
 
+
   const allUsers = await userModel.find({
     username:{
       $regex:data,
       $options:'i'
     }
   })
-
+  
   console.log(allUsers);
 
   res.status(200).json(allUsers)
 
 })
+
+
 
 module.exports = router;
