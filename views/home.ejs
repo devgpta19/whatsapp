@@ -281,7 +281,7 @@
 
         <% loggedInUser.friends.forEach(friend=> {%>
           <div onclick="openChat('<%= friend.profileImage %>','<%= friend.username %>','<%= friend._id %>')"
-            id="chats" id="apcid<%= friend._id %>">
+            id="chats" id="apcid_<%= friend._id %>">
             <div id="friendprofile">
               <img id="image" src="https://i.pinimg.com/564x/3e/b4/f3/3eb4f3440384fd1b4e2870fc8b0ab829.jpg" alt="">
               <p id="name">@<%=friend.username%>
@@ -345,17 +345,11 @@
 
       console.log("data");
       if (data == "") return
-
-
-      const response = await axios.post('/searchUser', {
-        data: data
-      })
-
-
+      
+      const response = await axios.post('/searchUser', {data: data})
 
       document.querySelector('#center #user').innerHTML = ""
-
-      response.data.forEach(searchUser=> {
+      response.data.forEach(searchUser => {
         appendSearchUser(searchUser.profileImage, searchUser.username, searchUser._id)
       });
 
@@ -371,7 +365,7 @@
     }
 
     function appendChat(profileImage, username, id) {
-      if (document.querySelector(`#chats > #apcid_${id}`)) return
+      if (document.querySelector(`#chats #apcid_${id}`)) return
 
       const template = `
       <div class="chat" id="apcid_${id}" >

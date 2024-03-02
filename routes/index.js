@@ -82,13 +82,43 @@ router.post('/searchUser', isloggedIn, async function(req, res, next){
       $options:'i'
     }
   })
-  
+
   console.log(allUsers);
 
   res.status(200).json(allUsers)
 
 })
 
+router.post('/addFriend', isloggedIn, async function(req, res, next){
+  const friendId = req.body.friendId
 
+  const friendUser = await userModel.findOne({
+    _id: friendId
+  })
+
+  const loggedInUser = await userModel.findOne({
+    username: req.session.passport.user
+  })
+
+  const indexOfFriendUser = loggedInUser.friends.indexOf(friendUser._id)
+
+  if(indexOfFriendUser !== -1){
+    res.status(200).json({
+      message: 'already friends'
+    })
+    return
+  }
+
+  loggedInUser.friends.push(friendUser._id)
+  friendUser.friends.push(loggedInUser._id)
+
+  await loggedInUser.save()
+  await friendUser.save()
+
+  res.status(200).json({
+    message:"friend added"
+  })
+
+})
 
 module.exports = router;
