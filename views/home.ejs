@@ -125,11 +125,13 @@
       background-color: rgb(196, 196, 196);
     }
 
-    #conversationArea #message {
-      padding: 0.5rem 0.75rem;
-      border-radius: 1rem;
-      background-color: #d1d1d1;
+    #message {
+      /* padding: 0.5rem 0.75rem; */
+      /* border-radius: 1rem; */
+      background-color: #000000;
       width: fit-content;
+      height: 2rem;
+      color: rgb(255, 0, 0);
     }
 
     #conversationArea #outgoingMessage {
@@ -309,8 +311,8 @@
 
       <div id="msgsend">
         <input type="text" placeholder="Enter Message" id="inputMessage">
-        <button>
-          <i id="sendMessage" class="ri-send-plane-2-fill"></i>
+        <button onclick="sendMessage()" id="sendMessage" >
+          <i class="ri-send-plane-2-fill"></i>
         </button>
       </div>
     </div>
@@ -403,14 +405,11 @@
     async function openChat(profileImage, username, id) {
       document.querySelector('#right').style.display = "initial"
 
-      oppositeUser = username;
-      console.log(oppositeUser)
       const response = await axios.post('/getMessages', {
         oppositeUser: username
       })
-      // console.log(username);
 
-      document.querySelector('#conversationArea').innerHTML = "";
+      document.querySelector('#conversationArea').innerHTML = ""
 
       response.data.forEach(function (message) {
         if (message.sender !== username) appendOutgoingMessage(message.data)
@@ -433,14 +432,14 @@
     }
 
     function appendIncomingMessage(message) {
-      const template = `<div id="message">
+      const template = `<div id="message IncomingMessage">
         ${message}
         </div>`
 
       document.querySelector('#conversationArea').innerHTML += template
     }
     function sendMessage() {
-      const message = document.querySelector('#inputMessage').value = ""
+      const message = document.querySelector('#inputMessage').value
       appendOutgoingMessage(message)
       document.querySelector('#inputMessage').value = ""
 
